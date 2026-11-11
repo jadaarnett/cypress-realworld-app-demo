@@ -1,0 +1,31 @@
+name: Kitchen Sink Flake Demo
+
+on:
+  push:
+    branches-ignore:
+      - "renovate/**"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  kitchen-sink:
+    name: Kitchen Sink flake demo
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      # cypress-io/github-action fails this step when Cypress exits non-zero,
+      # so a spec that fails all of its attempts fails the job.
+      - name: Run Kitchen Sink suite
+        uses: cypress-io/github-action@v7
+        with:
+          config-file: cypress.kitchen-sink.config.ts
+          spec: cypress/demo/kitchen-sink-flake.spec.ts
